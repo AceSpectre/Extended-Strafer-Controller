@@ -6,7 +6,7 @@ Modular first person controller based on Quake's movement system
 
 1. Install the asset using the Godot Asset Library
 2. Update the input maps used in the scripts or change your project input maps to match the following image:
-![Input map used in project while developing the asset](https://raw.githubusercontent.com/AceSpectre/ExtendedStraferController/blob/main/media/inputmap.png)
+![Input map used in project while developing the asset](https://github.com/AceSpectre/ExtendedStraferController/blob/main/media/inputmap.png)
 
 
 # Features
