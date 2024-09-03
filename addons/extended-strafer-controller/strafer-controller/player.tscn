@@ -1,0 +1,126 @@
+[gd_scene load_steps=17 format=3 uid="uid://c6c1orwh1bmhe"]
+
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/strafer-controller/StraferController3D.gd" id="1_qw471"]
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/modular-controller-base/Controller3DSettings.gd" id="2_at1fk"]
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/modular-controller-base/BaseMovementState.gd" id="3_4iyjc"]
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/strafer-controller/states/StraferAirState.gd" id="3_fgsa2"]
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/strafer-controller/states/StraferGroundState.gd" id="4_jncx1"]
+[ext_resource type="Script" path="res://addons/extended-strafer-controller/strafer-controller/states/StraferSlideState.gd" id="5_55xlp"]
+
+[sub_resource type="Resource" id="Resource_bbko0"]
+script = ExtResource("2_at1fk")
+MOUSE_SENS = 2.0
+CONTROL = 15.0
+MAX_SPEED = 16.0
+MAX_CROUCH_SPEED = 8.0
+MAX_POSSIBLE_SPEED = 25.0
+MAX_ACCEL = 150.0
+GRAVITY = 32.0
+JUMP_FORCE = 12.0
+COYOTE_TIME = 0.2
+
+[sub_resource type="Resource" id="Resource_imdn4"]
+script = ExtResource("3_fgsa2")
+AIR_DRAG = 0.84
+AIR_LERP_SPEED = 35.1
+
+[sub_resource type="Resource" id="Resource_1wueb"]
+script = ExtResource("4_jncx1")
+GROUND_DRAG = 0.86
+SLIDE_SPEED = 10.0
+
+[sub_resource type="Resource" id="Resource_vw2ee"]
+script = ExtResource("5_55xlp")
+slide_force = 6.0
+slide_jump_force = 1.0
+SLIDE_DRAG = 1.0
+SLIDE_LERP_SPEED = 0.08
+ALLOWED_DIR_DOT_PROD = 0.7
+VEL_TRANS_THRESHOLD = 9.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c34n3"]
+
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_j4ixb"]
+length = 0.01
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_wnugk"]
+height = 0.95
+radius = 0.45
+
+[sub_resource type="QuadMesh" id="QuadMesh_bpix4"]
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="Gradient" id="Gradient_5v8pf"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_30jea"]
+gradient = SubResource("Gradient_5v8pf")
+
+[node name="Player" type="CharacterBody3D" groups=["Player"]]
+collision_layer = 2
+floor_block_on_wall = false
+floor_snap_length = 0.4
+script = ExtResource("1_qw471")
+_START_SETTINGS = SubResource("Resource_bbko0")
+_START_STATES = Array[ExtResource("3_4iyjc")]([SubResource("Resource_imdn4"), SubResource("Resource_1wueb"), SubResource("Resource_vw2ee")])
+starting_state_index = 1
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_c34n3")
+
+[node name="Ground" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("SeparationRayShape3D_j4ixb")
+disabled = true
+
+[node name="Ceiling" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_wnugk")
+target_position = Vector3(0, 0.5, 0)
+max_results = 1
+debug_shape_custom_color = Color(1, 0, 1, 1)
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="CameraRecoil" type="Node3D" parent="Head"]
+
+[node name="Camera" type="Camera3D" parent="Head/CameraRecoil"]
+doppler_tracking = 2
+current = true
+fov = 95.0
+
+[node name="PostProcess" type="MeshInstance3D" parent="Head/CameraRecoil/Camera"]
+visible = false
+mesh = SubResource("QuadMesh_bpix4")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+metadata/_edit_lock_ = true
+
+[node name="Control" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="HUD/Control"]
+scale = Vector2(0.037, 10)
+texture = SubResource("GradientTexture1D_30jea")
+
+[node name="Orientation" type="Node3D" parent="."]
+
+[node name="CameraAnimations" type="AnimationPlayer" parent="."]
