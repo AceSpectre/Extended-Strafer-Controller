@@ -22,3 +22,4 @@ icon.svg
 project.godot
 addons/Asset-Drawer-5bfeac14d6a46fa44e680b1ede3fd05ff0bf45b8/
 *.*.import
+media/*.import
